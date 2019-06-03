@@ -54,7 +54,7 @@ void resize_array(Array *arr)
 {
 
   // Create a new element storage with double capacity
-  char *new_ptr = malloc(arr->capacity * 2 * sizeof(char *));
+  char **new_ptr = malloc(arr->capacity * 2 * sizeof(char *));
   // Copy elements into the new storage
   for (int i = 0; i < arr->count; i++)
   {
@@ -89,10 +89,9 @@ char *arr_read(Array *arr, int index)
   }
   else
   {
-  // Otherwise, return the element at the given index
-  return arr->elements[index];
+    // Otherwise, return the element at the given index
+    return arr->elements[index];
   }
-
 }
 
 /*****
@@ -104,14 +103,32 @@ void arr_insert(Array *arr, char *element, int index)
 {
 
   // Throw an error if the index is greater than the current count
-
-  // Resize the array if the number of elements is over capacity
-
-  // Move every element after the insert index to the right one position
-
-  // Copy the element (hint: use `strdup()`) and add it to the array
-
-  // Increment count by 1
+  if (index > arr->count)
+  {
+    printf("Requested index to insert is out of range.");
+  }
+  else
+  {
+    // Resize the array if the number of elements is over capacity
+    if (arr->count == arr->capacity)
+    {
+      printf("Resizing...\n");
+      resize_array(arr);
+    }
+    // Move every element after the insert index to the right one position
+    for (int i = arr->count - 1; i > index; i--)
+    {
+      printf("Shift Right");
+      char *temp = strdup(arr->elements[i + 1]);
+      printf("%s\n", temp);
+      arr->elements[i] = temp;
+    }
+    // Copy the element (hint: use `strdup()`) and add it to the array
+    char *copied_element = strdup(element);
+    arr->elements[index] = copied_element;
+    // Increment count by 1
+    arr->count++;
+  }
 }
 
 /*****
@@ -122,10 +139,16 @@ void arr_append(Array *arr, char *element)
 
   // Resize the array if the number of elements is over capacity
   // or throw an error if resize isn't implemented yet.
-
+  if (arr->count == arr->capacity)
+  {
+    printf("Capacity: %d, Resizing...\n", arr->capacity);
+    resize_array(arr);
+  }
   // Copy the element and add it to the end of the array
-
+  char *copied_element = strdup(element);
+  arr->elements[arr->count] = copied_element;
   // Increment count by 1
+  arr->count++;
 }
 
 /*****
@@ -139,10 +162,26 @@ void arr_remove(Array *arr, char *element)
 
   // Search for the first occurence of the element and remove it.
   // Don't forget to free its memory!
-
-  // Shift over every element after the removed element to the left one position
+  int found_index = -1;
+  for (int i = 0; i < arr->count; i++)
+  {
+    if (found_index != -1)  
+    {
+      arr->elements[i-1] = arr->elements[i]; // Shift over every element after the removed element to the left one position
+    }
+    else
+    {
+      if (strcmp(arr->elements[i],element) == 0)
+      {
+        free(arr->elements[i]);
+        found_index = i;
+        printf("Found Index: %d\n", found_index);
+      }
+    }
+  }
 
   // Decrement count by 1
+  arr->count--;
 }
 
 /*****
@@ -150,6 +189,8 @@ void arr_remove(Array *arr, char *element)
  *****/
 void arr_print(Array *arr)
 {
+  printf("Capacity: %d, ", arr->capacity);
+  printf("Count: %d, ", arr->count);
   printf("[");
   for (int i = 0; i < arr->count; i++)
   {
@@ -168,12 +209,22 @@ int main(void)
 
   Array *arr = create_array(1);
 
-  arr_insert(arr, "STRING1", 0);
+  // arr_insert(arr, "STRING1", 0);
+  // arr_print(arr);
+  // resize_array(arr);
+  // arr_print(arr);
+
+  arr_append(arr, "STRING3");
   arr_append(arr, "STRING4");
-  arr_insert(arr, "STRING2", 0);
-  arr_insert(arr, "STRING3", 1);
+  arr_append(arr, "STRING5");
   arr_print(arr);
-  arr_remove(arr, "STRING3");
+  // arr_insert(arr, "STRING2", 0);
+  // arr_print(arr);
+  // arr_insert(arr, "STRING3", 0);
+  // arr_print(arr);
+  // arr_insert(arr, "STRING4", 0);
+  // arr_print(arr);
+  arr_remove(arr, "STRING4");
   arr_print(arr);
 
   destroy_array(arr);
