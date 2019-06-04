@@ -43,6 +43,7 @@ void destroy_array(Array *arr)
     free(arr->elements[i]);
   }
   // Free array
+  free(arr->elements);
   free(arr);
 }
 
