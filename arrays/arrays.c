@@ -84,7 +84,7 @@ char *arr_read(Array *arr, int index)
   // Throw an error if the index is greater or equal to than the current count
   if (index >= arr->count)
   {
-    printf("Requested index out of range.");
+    printf("Requested index out of range.\n");
     return NULL;
   }
   else
@@ -105,27 +105,22 @@ void arr_insert(Array *arr, char *element, int index)
   // Throw an error if the index is greater than the current count
   if (index > arr->count)
   {
-    printf("Requested index to insert is out of range.");
+    printf("Requested index to insert is out of range.\n");
   }
   else
   {
     // Resize the array if the number of elements is over capacity
     if (arr->count == arr->capacity)
     {
-      printf("Resizing...\n");
       resize_array(arr);
     }
     // Move every element after the insert index to the right one position
-    for (int i = arr->count - 1; i > index; i--)
+    for (int i = arr->count - 1; i >= index; i--)
     {
-      printf("Shift Right");
-      char *temp = strdup(arr->elements[i + 1]);
-      printf("%s\n", temp);
-      arr->elements[i] = temp;
+      arr->elements[i + 1] = arr->elements[i];
     }
     // Copy the element (hint: use `strdup()`) and add it to the array
-    char *copied_element = strdup(element);
-    arr->elements[index] = copied_element;
+    arr->elements[index] = strdup(element);
     // Increment count by 1
     arr->count++;
   }
@@ -165,17 +160,16 @@ void arr_remove(Array *arr, char *element)
   int found_index = -1;
   for (int i = 0; i < arr->count; i++)
   {
-    if (found_index != -1)  
+    if (found_index != -1)
     {
-      arr->elements[i-1] = arr->elements[i]; // Shift over every element after the removed element to the left one position
+      arr->elements[i - 1] = arr->elements[i]; // Shift over every element after the removed element to the left one position
     }
     else
     {
-      if (strcmp(arr->elements[i],element) == 0)
+      if (strcmp(arr->elements[i], element) == 0)
       {
         free(arr->elements[i]);
         found_index = i;
-        printf("Found Index: %d\n", found_index);
       }
     }
   }
@@ -209,7 +203,8 @@ int main(void)
 
   Array *arr = create_array(1);
 
-  // arr_insert(arr, "STRING1", 0);
+  arr_insert(arr, "STRING1", 0);
+  // arr_insert(arr, "STRING2", 0);
   // arr_print(arr);
   // resize_array(arr);
   // arr_print(arr);
@@ -224,7 +219,8 @@ int main(void)
   // arr_print(arr);
   // arr_insert(arr, "STRING4", 0);
   // arr_print(arr);
-  arr_remove(arr, "STRING4");
+  arr_insert(arr, "STRING2", 3);
+  // arr_remove(arr, "STRING4");
   arr_print(arr);
 
   destroy_array(arr);
